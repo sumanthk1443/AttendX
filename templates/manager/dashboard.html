@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Manager Dashboard{% endblock %}
+
+{% block nav_links %}
+  <a href="{{ url_for('manager_dashboard') }}">Overview</a>
+  <a href="{{ url_for('manager_team_attendance') }}">Team Attendance</a>
+{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-header">
+    <h1>📊 Manager Dashboard</h1>
+    <p>Track your team's attendance and performance in real time</p>
+  </div>
+
+  <!-- Stats -->
+  <div class="stat-grid" style="margin-bottom:2rem;">
+    <div class="stat-card" style="--clr:#06b6d4">
+      <div class="label">Total Employees</div>
+      <div class="value">{{ employees|length }}</div>
+    </div>
+    <div class="stat-card" style="--clr:#10b981">
+      <div class="label">Present Today</div>
+      <div class="value">{{ today_att|selectattr('status','eq','Present')|list|length }}</div>
+    </div>
+    <div class="stat-card" style="--clr:#ef4444">
+      <div class="label">Absent Today</div>
+      <div class="value">{{ employees|length - today_att|selectattr('status','eq','Present')|list|length }}</div>
+    </div>
+  </div>
+
+  <!-- Today's presence -->
+  <div class="card" style="margin-bottom:2rem;">
+    <h3 style="font-family:'Syne',sans-serif; margin-bottom:1rem;">Team Status — Today</h3>
+    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:.75rem;">
+      {% for emp in employees %}
+      <div style="background:var(--surface2); border-radius:10px; padding:1rem;
+                  border:1px solid {% if emp.id in present_ids %}rgba(16,185,129,.3){% else %}var(--border){% endif %};">
+        <div style="display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem;">
+          <div style="width:36px; height:36px; border-radius:50%;
+            background:linear-gradient(135deg,{% if emp.id in present_ids %}#10b981,#059669{% else %}#475569,#334155{% endif %});
+            display:flex; align-items:center; justify-content:center;
+            font-weight:700; font-size:.85rem; color:#fff; flex-shrink:0;">
+            {{ emp.name[0].upper() }}
+          </div>
+          <div>
+            <div style="font-size:.875rem; font-weight:500;">{{ emp.name }}</div>
+            <div style="font-size:.75rem; color:var(--muted);">{{ emp.department or 'No dept' }}</div>
+          </div>
+        </div>
+        {% if emp.id in present_ids %}
+          <span class="pill pill-present">✓ Present</span>
+        {% else %}
+          <span class="pill pill-absent">✗ Absent</span>
+        {% endif %}
+      </div>
+      {% else %}
+      <div style="color:var(--muted); grid-column:1/-1; text-align:center; padding:1rem;">
+        No employees found.
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="text-align:right;">
+    <a href="{{ url_for('manager_team_attendance') }}" class="btn btn-primary">View Full Attendance Log →</a>
+  </div>
+</div>
+{% endblock %}

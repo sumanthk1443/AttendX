@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Add User{% endblock %}
+
+{% block nav_links %}
+  <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+  <a href="{{ url_for('admin_add_user') }}">Add User</a>
+  <a href="{{ url_for('admin_attendance') }}">Attendance</a>
+{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-header">
+    <h1>➕ Add New User</h1>
+    <p>Create an account and automatically send login credentials via email</p>
+  </div>
+
+  <div style="max-width:560px;">
+    <div class="card">
+      <div style="margin-bottom:1.5rem;">
+        <h3 style="font-family:'Syne',sans-serif; font-size:1rem; margin-bottom:.25rem;">User Details</h3>
+        <p style="color:var(--muted); font-size:.85rem;">
+          A random secure password will be generated and sent to the user's email automatically.
+        </p>
+      </div>
+
+      <form method="POST" action="{{ url_for('admin_add_user') }}">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" name="name" class="form-control" placeholder="e.g. Priya Sharma" required/>
+        </div>
+
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" name="email" class="form-control" placeholder="priya@company.com" required/>
+          <small style="color:var(--muted); font-size:.78rem;">Login credentials will be sent to this email.</small>
+        </div>
+
+        <div class="form-group">
+          <label>Department</label>
+          <input type="text" name="department" class="form-control" placeholder="e.g. Engineering, Marketing..."/>
+        </div>
+
+        <div class="form-group">
+          <label>Role *</label>
+          <select name="role" class="form-control" required>
+            <option value="" disabled selected>Select a role</option>
+            <option value="employee">👤 Employee</option>
+            <option value="manager">📊 Manager</option>
+            <option value="hr">🏢 HR</option>
+          </select>
+        </div>
+
+        <!-- Role info cards -->
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:.75rem; margin-bottom:1.5rem;">
+          <div style="background:rgba(16,185,129,.07); border:1px solid rgba(16,185,129,.2);
+                      border-radius:8px; padding:.75rem; text-align:center;">
+            <div style="font-size:1.2rem;">👤</div>
+            <div style="font-size:.75rem; font-weight:700; color:#6ee7b7; margin:.25rem 0 .2rem;">Employee</div>
+            <div style="font-size:.7rem; color:var(--muted);">Check-in/out, view own records</div>
+          </div>
+          <div style="background:rgba(6,182,212,.07); border:1px solid rgba(6,182,212,.2);
+                      border-radius:8px; padding:.75rem; text-align:center;">
+            <div style="font-size:1.2rem;">📊</div>
+            <div style="font-size:.75rem; font-weight:700; color:#67e8f9; margin:.25rem 0 .2rem;">Manager</div>
+            <div style="font-size:.7rem; color:var(--muted);">View team attendance</div>
+          </div>
+          <div style="background:rgba(236,72,153,.07); border:1px solid rgba(236,72,153,.2);
+                      border-radius:8px; padding:.75rem; text-align:center;">
+            <div style="font-size:1.2rem;">🏢</div>
+            <div style="font-size:.75rem; font-weight:700; color:#f9a8d4; margin:.25rem 0 .2rem;">HR</div>
+            <div style="font-size:.7rem; color:var(--muted);">Full reports & user overview</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:.75rem;">
+          <button type="submit" class="btn btn-primary" style="flex:1;">
+            🚀 Create Account & Send Email
+          </button>
+          <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

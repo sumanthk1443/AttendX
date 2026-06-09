@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Employee Dashboard{% endblock %}
+
+{% block nav_links %}
+  <a href="{{ url_for('employee_dashboard') }}">My Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<div class="page">
+  <div class="page-header">
+    <h1>👤 Employee Dashboard</h1>
+    <p>Welcome back, {{ current_user.name }}! Manage your daily attendance below.</p>
+  </div>
+
+  <!-- Today's card -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:2rem; max-width:700px;">
+    <div class="card" style="border-color:rgba(59,130,246,.3);">
+      <div style="color:var(--muted); font-size:.8rem; text-transform:uppercase; letter-spacing:.06em;">Today's Date</div>
+      <div style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; margin-top:.25rem;">
+        {{ today_record.date.strftime('%d %b %Y') if today_record else 'Not checked in' }}
+      </div>
+    </div>
+    <div class="card" style="border-color:rgba(16,185,129,.3);">
+      <div style="color:var(--muted); font-size:.8rem; text-transform:uppercase; letter-spacing:.06em;">Status</div>
+      <div style="font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; margin-top:.25rem;">
+        {% if today_record %}
+          <span style="color:#6ee7b7;">{{ today_record.status }}</span>
+        {% else %}
+          <span style="color:var(--muted);">Pending</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Check in/out actions -->
+  <div class="card" style="max-width:560px; margin-bottom:2rem;">
+    <h3 style="font-family:'Syne',sans-serif; margin-bottom:1.25rem;">Today's Actions</h3>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+      <!-- Check In -->
+      <div style="background:var(--surface2); border-radius:10px; padding:1.25rem; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:2rem; margin-bottom:.5rem;">🟢</div>
+        <div style="font-size:.8rem; color:var(--muted); margin-bottom:.5rem;">CHECK IN</div>
+        {% if today_record and today_record.check_in %}
+          <div style="color:#6ee7b7; font-weight:700;">{{ today_record.check_in.strftime('%H:%M') }}</div>
+          <div style="color:var(--muted); font-size:.75rem; margin-top:.25rem;">Recorded</div>
+        {% else %}
+          <a href="{{ url_for('employee_checkin') }}" class="btn btn-success" style="width:100%; justify-content:center;">
+            Check In
+          </a>
+        {% endif %}
+      </div>
+
+      <!-- Check Out -->
+      <div style="background:var(--surface2); border-radius:10px; padding:1.25rem; text-align:center; border:1px solid var(--border);">
+        <div style="font-size:2rem; margin-bottom:.5rem;">🔴</div>
+        <div style="font-size:.8rem; color:var(--muted); margin-bottom:.5rem;">CHECK OUT</div>
+        {% if today_record and today_record.check_out %}
+          <div style="color:#fca5a5; font-weight:700;">{{ today_record.check_out.strftime('%H:%M') }}</div>
+          <div style="color:var(--muted); font-size:.75rem; margin-top:.25rem;">Recorded</div>
+        {% elif today_record and today_record.check_in %}
+          <a href="{{ url_for('employee_checkout') }}" class="btn btn-danger" style="width:100%; justify-content:center;">
+            Check Out
+          </a>
+        {% else %}
+          <div style="color:var(--muted); font-size:.85rem;">Check in first</div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if today_record and today_record.check_in and today_record.check_out %}
+    <div style="margin-top:1rem; background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.2);
+                border-radius:8px; padding:.75rem; text-align:center;">
+      {% set delta = today_record.check_out - today_record.check_in %}
+      {% set h = (delta.seconds // 3600) %}
+      {% set m = (delta.seconds % 3600) // 60 %}
+      <span style="color:#6ee7b7;">✅ Today's work: {{ h }}h {{ m }}m</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- History -->
+  <div class="card">
+    <h3 style="font-family:'Syne',sans-serif; margin-bottom:1rem;">Recent Attendance</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Duration</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for att in history %}
+          <tr>
+            <td>{{ att.date.strftime('%d %b %Y') }}</td>
+            <td>{{ att.check_in.strftime('%H:%M') if att.check_in else '—' }}</td>
+            <td>{{ att.check_out.strftime('%H:%M') if att.check_out else '—' }}</td>
+            <td style="color:var(--muted);">
+              {% if att.check_in and att.check_out %}
+                {% set delta = att.check_out - att.check_in %}
+                {{ (delta.seconds // 3600) }}h {{ ((delta.seconds % 3600) // 60) }}m
+              {% else %}—{% endif %}
+            </td>
+            <td><span class="pill pill-{{ att.status.lower() }}">{{ att.status }}</span></td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" style="text-align:center; color:var(--muted); padding:1.5rem;">
+              No attendance records yet.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

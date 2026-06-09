@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login — AttendX</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#0a0e1a; --surface:#111827; --surface2:#1a2235; --border:#1e2d45;
+      --text:#e2e8f0; --muted:#64748b; --admin:#8b5cf6;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text);
+      min-height:100vh; display:flex; align-items:center; justify-content:center;
+      position:relative; overflow:hidden;
+    }
+    body::before {
+      content:''; position:fixed; inset:0;
+      background: radial-gradient(ellipse 60% 60% at 30% 30%, rgba(139,92,246,.18) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .grid-bg {
+      position:fixed; inset:0; pointer-events:none; opacity:.04;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size:40px 40px;
+    }
+    .login-wrap { width:100%; max-width:420px; padding:1rem; position:relative; z-index:1; }
+    .brand { text-align:center; margin-bottom:2rem; }
+    .brand h1 { font-family:'Syne',sans-serif; font-size:2.2rem; font-weight:800; }
+    .brand h1 span { color:var(--admin); }
+    .brand p { color:var(--muted); font-size:.9rem; margin-top:.25rem; }
+    .shield { font-size:3rem; margin-bottom:.5rem; display:block; }
+    .card {
+      background:var(--surface); border:1px solid rgba(139,92,246,.3);
+      border-radius:16px; padding:2rem;
+      box-shadow:0 20px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(139,92,246,.1);
+    }
+    .card h2 {
+      font-family:'Syne',sans-serif; font-weight:700; font-size:1.25rem;
+      margin-bottom:.25rem;
+    }
+    .card p { color:var(--muted); font-size:.85rem; margin-bottom:1.5rem; }
+    .form-group { margin-bottom:1rem; }
+    .form-group label { display:block; font-size:.8rem; color:var(--muted);
+                        margin-bottom:.4rem; text-transform:uppercase; letter-spacing:.05em; }
+    .form-control {
+      width:100%; padding:.7rem 1rem;
+      background:var(--surface2); border:1px solid var(--border);
+      border-radius:8px; color:var(--text); font-size:.9rem;
+      outline:none; transition:border-color .2s; font-family:'DM Sans',sans-serif;
+    }
+    .form-control:focus { border-color:var(--admin); }
+    .btn-login {
+      width:100%; padding:.8rem; border-radius:8px; border:none;
+      background:var(--admin); color:#fff; font-family:'Syne',sans-serif;
+      font-size:1rem; font-weight:700; cursor:pointer; transition:all .2s;
+      margin-top:.5rem;
+    }
+    .btn-login:hover { background:#7c3aed; transform:translateY(-1px); }
+    .alert {
+      padding:.7rem 1rem; border-radius:8px; margin-bottom:1rem; font-size:.875rem;
+    }
+    .alert-danger { background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); color:#fca5a5; }
+    .alert-warning { background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.3); color:#fde68a; }
+    .alt-link { text-align:center; margin-top:1.25rem; font-size:.85rem; color:var(--muted); }
+    .alt-link a { color:var(--admin); }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="login-wrap">
+    <div class="brand">
+      <span class="shield"></span>
+      <h1>Admin <span>Portal</span></h1>
+      <p>Restricted — Authorized Personnel Only</p>
+    </div>
+    <div class="card">
+      <h2>Admin Sign In</h2>
+      <p>Enter your administrator credentials to continue.</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('admin_login') }}">
+        <div class="form-group">
+          <label>Admin Email</label>
+          <input type="email" name="email" class="form-control" placeholder="admin@attendx.com" required/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" name="password" class="form-control" placeholder="••••••••" required/>
+        </div>
+        <button type="submit" class="btn-login">🔒 Secure Login</button>
+      </form>
+
+      <div class="alt-link"><a href="{{ url_for('login') }}">← Back to User Login</a></div>
+    </div>
+  </div>
+</body>
+</html>
